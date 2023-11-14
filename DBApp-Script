@@ -1,0 +1,62 @@
+--May idaragdag pa ako sa tables kaya temporary script lang 'to 
+
+CREATE TABLE person(
+    personid        INT(4),
+    firstname       VARCHAR(45),
+    lastname        VARCHAR(45),
+    middlename      VARCHAR(45),
+    gender          ENUM('M', 'F'),
+    birthday        DATE,
+    age             INT(3),
+    picture         VARCHAR(45),
+    primary key (personid)
+);
+
+CREATE TABLE patient(
+    patientid       INT(4),
+    admission       DATE,
+    discharge       DATE,
+    
+    primary key (patientid),
+    foreign key (patientid) REFERENCES   
+        person (personid),
+    
+);
+
+CREATE TABLE donors(
+    donorid         INT(4),
+    mobileno        INT(12),
+);
+
+CREATE TABLE donations(
+    donationid      INT(5),
+    donor           INT(4),
+    facility        INT(6),   
+);
+
+CREATE TABLE health_facility(
+    facilityid      INT(6),
+    capacity        INT(3),
+);
+
+CREATE TABLE nondonated_medicine(
+    medicineid      INT(3),
+);
+
+CREATE TABLE donated_medicine(
+    donationid      INT(5),
+    medicineid      INT(3),
+);
+
+CREATE TABLE medicine(
+    medicineid      INT(3),
+    brandname       VARCHAR(45),
+    genericname     VARCHAR(45),
+    isdonated       BOOLEAN
+);
+
+CREATE TABLE medication(
+    patientid       INT(4),
+    medicineid      INT(3)
+);
+
