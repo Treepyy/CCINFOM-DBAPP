@@ -18,8 +18,7 @@ CREATE TABLE patient(
     discharge       DATE,
     primary key (patientid),
     foreign key (patientid) REFERENCES   
-        person (personid),
-    
+        person (personid)
 );
 
 CREATE TABLE donor(
@@ -43,11 +42,12 @@ CREATE TABLE donation(
 
 CREATE TABLE health_facility(
     facilityid      INT(6),
+    facilityname    VARCHAR(45),
     maxcapacity     INT(3),
     facilitytype    ENUM('C','H','HC') --Clinic, Hospital, Health Center
     streetno        VARCHAR(45),
     streetname      VARCHAR(45),
-    barangay        VARCHAR(45),
+    baranggay        VARCHAR(45),
     city            VARCHAR(45),
     province        VARCHAR(45),
     region          VARCHAR(45),
@@ -86,6 +86,7 @@ CREATE TABLE medication_tracking(
     patientid       INT(4),
     facilityid      INT(6),
     medicineid      INT(3),
+    administer      DATE,
     primary key (patientid, medicineid),
     foreign key (patientid) REFERENCES
         patient (patientid),
@@ -94,4 +95,62 @@ CREATE TABLE medication_tracking(
     foreign key (facilityid) REFERENCES
         health_facility (facilityid)  
 );
+
+
+INSERT INTO person (personid, firstname, lastname, middlename, gender, birthday, age, picture)
+    VALUES
+        (1001, 'Rafael Enrico', 'Hugo', 'Camila', 'M', '2003-21-01', '20', 'Rafael.jpg'),
+        (1002, 'Vance Gyan', 'Robles', 'M--', 'M', '2003-06-27', '20', 'Vance.jpg'),
+        (1003, 'Dominic Joel', 'Gomez', 'M--', 'M', '2003-04-05', '20', 'Dominic.jpg'),
+        (1004, 'Ryan Clemence', 'Vasquez', 'R--', 'M', '2003-12-25', '19', 'Ryan.jpg');
+
+INSERT INTO patient (patientid, admission, discharge)
+    VALUES
+        (1002, '2020-03-16', NULL),
+        (1003, '2021-05-21', '2021-07-28');
+
+INSERT INTO donor (donorid, mobileno)
+    VALUES
+        (1001, 9451569)
+        (1004, 9876108)
+
+INSERT INTO donation (donationid, donor, facility)
+    VALUES
+        (50001, 1001, 600001),
+        (50002, 1001, 600001),
+        (50003, 1001, 600002),
+        (50004, 1004, 600001),
+        (50005, 1004, 600002),
+        (50006, 1004, 600002);
+
+INSERT INTO health_facility (facilityid, facilityname, maxcapacity, facilitytype, streetno, streetname, baranggay, city, province, region)
+    VALUES
+        (600001, 'Philippine General Hospital', 300, 'H', '1000','Taft Avenue', 'Brgy. 674', 'Manila', 'Metro Manila', 'NCR'),
+        (600002, 'St. Peter Paul Medical Clinic', 200, 'C', '1182', 'Grey Street', 'Brgy. 668', 'Manila', 'Metro Manila', 'NCR');
+
+INSERT INTO nondonated_medicine (medicineid)
+    VALUES
+        (301),
+        (305),
+        (307),
+        (308);
+
+INSERT INTO donated_medicine (donationid, medicineid)
+    VALUES
+        (50001, 302),
+        (50002, 303),
+        (50003, 304),
+        (50004, 306),
+        (50005, 309),
+        (50006, 310);
+
+INSERT INTO medicine (medicineid, brandname, genericname, category, medtype, amount, expiration, isdonated)
+    VALUES
+        (301, 'Calpol', 'Paracetamol', 'Antibiotic', 'Analgesic', 'T', '50', '2022-11-16', false),
+
+INSERT INTO medication_tracking (patientid, facilityid, medicineid, administer)
+    VALUES
+        (1002, 600001, 303, '2020-4-20'),
+        (1003, 600002, 305, '2021-05-30');
+
 
