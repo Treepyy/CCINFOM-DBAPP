@@ -16,47 +16,82 @@ CREATE TABLE patient(
     patientid       INT(4),
     admission       DATE,
     discharge       DATE,
-    
     primary key (patientid),
     foreign key (patientid) REFERENCES   
         person (personid),
     
 );
 
-CREATE TABLE donors(
+CREATE TABLE donor(
     donorid         INT(4),
     mobileno        INT(12),
+    primary key (donorid),
+    foreign key (donorid) REFERENCES   
+        person (personid)
 );
 
-CREATE TABLE donations(
+CREATE TABLE donation(
     donationid      INT(5),
     donor           INT(4),
-    facility        INT(6),   
+    facility        INT(6),
+    primary key(donationid),
+    foreign key (donor) REFERENCES   
+        donor (donorid),  
+    foreign key(facility) REFERENCES
+        health_facility (facilityid) 
 );
 
 CREATE TABLE health_facility(
     facilityid      INT(6),
-    capacity        INT(3),
+    maxcapacity     INT(3),
+    facilitytype    ENUM('C','H','HC') --Clinic, Hospital, Health Center
+    streetno        VARCHAR(45),
+    streetname      VARCHAR(45),
+    barangay        VARCHAR(45),
+    city            VARCHAR(45),
+    province        VARCHAR(45),
+    region          VARCHAR(45),
+    primary key (facilityid),
 );
 
 CREATE TABLE nondonated_medicine(
     medicineid      INT(3),
+    foreign key (medicineid) REFERENCES
+        medicine (medicineid)
+
 );
 
 CREATE TABLE donated_medicine(
     donationid      INT(5),
     medicineid      INT(3),
+    foreign key (donationid) REFERENCES
+        donation (donationid),
+    foreign key (medicineid) REFERENCES
+        medicine (medicineid)
 );
 
 CREATE TABLE medicine(
     medicineid      INT(3),
     brandname       VARCHAR(45),
     genericname     VARCHAR(45),
-    isdonated       BOOLEAN
+    category        VARCHAR(45), --Antibiotic eme
+    medtype         ENUM('L', 'T', 'C'), --Liquid, Tablet, Capsule
+    amount          INT(4),
+    expiration      DATE,
+    isdonated       BOOLEAN,
+    primary key (medicineid)
 );
 
-CREATE TABLE medication(
+CREATE TABLE medication_tracking(
     patientid       INT(4),
-    medicineid      INT(3)
+    facilityid      INT(6),
+    medicineid      INT(3),
+    primary key (patientid, medicineid),
+    foreign key (patientid) REFERENCES
+        patient (patientid),
+    foreign key (medicineid) REFERENCES
+        medicine (medicineid),
+    foreign key (facilityid) REFERENCES
+        health_facility (facilityid)  
 );
 
