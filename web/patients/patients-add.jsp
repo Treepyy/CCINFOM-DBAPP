@@ -1,3 +1,10 @@
+<%-- 
+    Document   : patients-add
+    Created on : 11 18, 23, 6:04:32 PM
+    Author     : ccslearner
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <!--
 To change this license header, choose License Headers in Project Properties.
@@ -9,13 +16,13 @@ and open the template in the editor.
         <title>Add a Patient</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="maincss.css">
+        <link rel="stylesheet" href="../maincss.css">
     </head>
     <body>
         <div class="container">
             <h1>Add a Patient</h1>
             <hr>
-            <button onclick="location.href = 'selection-patients.html';" type="submit" class="normbtn">Return to Previous Menu</button>
+            <button onclick="location.href = 'selection-patients.jsp';" type="submit" class="normbtn">Return to Previous Menu</button>
         </div>
     </body>
 </html>

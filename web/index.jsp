@@ -1,3 +1,10 @@
+<%-- 
+    Document   : index
+    Created on : 11 18, 23, 5:56:07 PM
+    Author     : ccslearner
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <!--
 To change this license header, choose License Headers in Project Properties.
@@ -16,9 +23,9 @@ and open the template in the editor.
           <h1>Welcome</h1>
           <hr>
           <p>Medicine Inventory and Donations Management Database Application</p>
-          <button onclick="location.href = 'selection.html';" type="submit" class="normbtn">Manage Records</button>
-          <button onclick="location.href = 'transactions.html';" type="submit" class="normbtn">Transactions</button>
-          <button onclick="location.href = 'reports.html';" type="submit" class="normbtn">Generate Reports</button>
+          <button onclick="location.href = 'selection.jsp';" type="submit" class="normbtn">Manage Records</button>
+          <button onclick="location.href = 'transactions.jsp';" type="submit" class="normbtn">Transactions</button>
+          <button onclick="location.href = 'reports.jsp';" type="submit" class="normbtn">Generate Reports</button>
         </div>
     </body>    
 </html>
