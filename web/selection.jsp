@@ -22,10 +22,10 @@ and open the template in the editor.
         <div class="container">
             <h1>Manage Records</h1>
             <hr>
-            <button onclick="location.href = 'selection.jsp';" type="submit" class="normbtn">Medicines</button>
-            <button onclick="location.href = 'selection.jsp';" type="submit" class="normbtn">Donors</button>
+            <button onclick="location.href = 'medicines/selection-medicines.jsp';" type="submit" class="normbtn">Medicines</button>
+            <button onclick="location.href = 'donors/selection-donors.jsp';" type="submit" class="normbtn">Donors</button>
             <button onclick="location.href = 'patients/selection-patients.jsp';" type="submit" class="normbtn">Patients</button>
-            <button onclick="location.href = 'selection.jsp';" type="submit" class="normbtn">Health Facilities</button>
+            <button onclick="location.href = 'facility/selection-facility.jsp';" type="submit" class="normbtn">Health Facilities</button>
             <button onclick="location.href = 'index.jsp';" type="submit" class="normbtn">Return to Main</button>
         </div>
     </body>
