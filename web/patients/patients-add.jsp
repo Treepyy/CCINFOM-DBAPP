@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.sql.*, java.util.*, dbapplication.*" %>
 <!DOCTYPE html>
 <!--
 To change this license header, choose License Headers in Project Properties.
@@ -21,8 +22,24 @@ and open the template in the editor.
     <body>
         <div class="container">
             <h1>Add a Patient</h1>
-            <hr>
-            <button onclick="location.href = 'selection-patients.jsp';" type="submit" class="normbtn">Return to Previous Menu</button>
+                    <hr>
+                    <jsp:useBean id="medBean" class="dbapplication.medicine" scope="session" />
+                    <% medBean.loadProducts(); %>
+                    <form name="selectproduct" action="addcart.jsp" method="POST">
+                        First Name: <input type="text" name="firstname" id="fname"><br>
+                        Last Name:  <input type="text" name="lastname" id="lname"><br>
+                        Middle Name:  <input type="text" name="lastname" id="mname"><br>
+                        Birthday: <input type="date" name="birthday" id="birthday"><br><br>
+                        Gender: <select name="gender" id="gender"> 
+                                    <option value="Male"> Male </option>                        
+                                    <option value="Female"> Female </option>    
+                                </select><br>
+                    </form>
+                    <form name="submitorder" action="submitorder.jsp" method = "POST">
+                        <br>
+                        <input type="submit" value="Submit" name="Submit" class ="normbtn" /><br>
+                    </form> 
+            <button onclick="location.href = 'selection-patients.jsp';" class="normbtn">Return to Previous Menu</button>
         </div>
     </body>
 </html>
