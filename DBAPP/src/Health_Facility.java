@@ -8,15 +8,14 @@ public class Health_Facility {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void createNewHealthFacility(Connection connection) throws SQLException {
-        // Get user input for health facility details
         System.out.println("Enter Facility ID:");
         int facilityId = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
+        scanner.nextLine();
         System.out.println("Enter Facility Name:");
         String facilityName = scanner.nextLine();
         System.out.println("Enter Max Capacity:");
         int maxCapacity = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
+        scanner.nextLine();
         System.out.println("Enter Facility Type (C, H, HC):");
         String facilityType = scanner.nextLine().toUpperCase();
         System.out.println("Enter Street No:");
@@ -36,7 +35,6 @@ public class Health_Facility {
                 "INSERT INTO health_facility (facilityid, facilityname, maxcapacity, facilitytype, " +
                         "streetno, streetname, baranggay, city, province, region) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 
-            // Set parameters for the prepared statement
             preparedStatement.setInt(1, facilityId);
             preparedStatement.setString(2, facilityName);
             preparedStatement.setInt(3, maxCapacity);
@@ -48,7 +46,6 @@ public class Health_Facility {
             preparedStatement.setString(9, province);
             preparedStatement.setString(10, region);
 
-            // Execute the insert statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Health facility created successfully!");
@@ -59,18 +56,15 @@ public class Health_Facility {
     }
 
     public static void updateHealthFacility(Connection connection) throws SQLException {
-        // Get user input for facility ID to update
         System.out.println("Enter Facility ID to update:");
         int facilityId = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
+        scanner.nextLine();
 
-        // Check if the health facility exists before proceeding with the update
         if (!doesHealthFacilityExist(connection, facilityId)) {
             System.out.println("Health facility not found. Unable to update information.");
             return;
         }
 
-        // Get updated information from the user
         System.out.println("Enter new Facility Name:");
         String newFacilityName = scanner.nextLine();
         System.out.println("Enter new Max Capacity:");
@@ -96,7 +90,6 @@ public class Health_Facility {
                         "streetno = ?, streetname = ?, baranggay = ?, city = ?, province = ?, region = ? " +
                         "WHERE facilityid = ?")) {
 
-            // Set parameters for the prepared statement
             preparedStatement.setString(1, newFacilityName);
             preparedStatement.setInt(2, newMaxCapacity);
             preparedStatement.setString(3, newFacilityType);
@@ -108,7 +101,6 @@ public class Health_Facility {
             preparedStatement.setString(9, newRegion);
             preparedStatement.setInt(10, facilityId);
 
-            // Execute the update statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Health facility information updated successfully!");
@@ -119,11 +111,9 @@ public class Health_Facility {
     }
 
     public static void deleteHealthFacilityById(Connection connection) throws SQLException {
-        // Get user input for facility ID to delete
         System.out.println("Enter Facility ID to delete:");
         int facilityId = scanner.nextInt();
 
-        // Check if the health facility exists before proceeding with the deletion
         if (!doesHealthFacilityExist(connection, facilityId)) {
             System.out.println("Health facility not found. Unable to delete.");
             return;
@@ -132,10 +122,8 @@ public class Health_Facility {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "DELETE FROM health_facility WHERE facilityid = ?")) {
 
-            // Set parameter for the prepared statement
             preparedStatement.setInt(1, facilityId);
 
-            // Execute the delete statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Health facility deleted successfully!");
@@ -146,20 +134,16 @@ public class Health_Facility {
     }
 
     public static void searchHealthFacilityById(Connection connection) throws SQLException {
-        // Get user input for facility ID to search
         System.out.println("Enter Facility ID to search:");
         int facilityId = scanner.nextInt();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM health_facility WHERE facilityid = ?")) {
 
-            // Set parameter for the prepared statement
             preparedStatement.setInt(1, facilityId);
 
-            // Execute the select statement
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    // Display the search results
                     System.out.println("Health facility found:");
                     do {
                         int foundFacilityId = resultSet.getInt("facilityid");
@@ -184,7 +168,6 @@ public class Health_Facility {
                         System.out.println("City: " + city);
                         System.out.println("Province: " + province);
                         System.out.println("Region: " + region);
-                        // Display other fields as needed
                         System.out.println();
                     } while (resultSet.next());
                 } else {
@@ -195,30 +178,24 @@ public class Health_Facility {
     }
 
     public static void viewHealthFacilitiesByFilter(Connection connection) throws SQLException {
-        // Get user input for the filter criteria
         System.out.println("Enter filter criteria (e.g., facilityname):");
         String filterCriteria = scanner.nextLine();
 
-        // Check if the provided criteria is valid
         if (!isValidCriteria(filterCriteria)) {
             System.out.println("Invalid criteria.");
             return;
         }
 
-        // Get user input for the filter value
         System.out.println("Enter filter value:");
         String filterValue = scanner.nextLine();
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM health_facility WHERE " + filterCriteria + " LIKE ?")) {
 
-            // Set parameter for the prepared statement
             preparedStatement.setString(1, "%" + filterValue + "%");
 
-            // Execute the select statement
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    // Display the filtered results
                     System.out.println("Health facilities matching the specified criteria:");
                     do {
                         int facilityId = resultSet.getInt("facilityid");
@@ -232,7 +209,6 @@ public class Health_Facility {
                         String province = resultSet.getString("province");
                         String region = resultSet.getString("region");
 
-                        // Display the data
                         System.out.println("Facility ID: " + facilityId);
                         System.out.println("Facility Name: " + facilityName);
                         System.out.println("Max Capacity: " + maxCapacity);
@@ -243,7 +219,6 @@ public class Health_Facility {
                         System.out.println("City: " + city);
                         System.out.println("Province: " + province);
                         System.out.println("Region: " + region);
-                        // Display other fields as needed
                         System.out.println();
                     } while (resultSet.next());
                 } else {
@@ -253,7 +228,6 @@ public class Health_Facility {
         }
     }
 
-    // Helper method to check if the provided criteria is valid
     private static boolean isValidCriteria(String criteria) {
         // Add more validation logic if needed
         return criteria.matches("[a-zA-Z_]+");

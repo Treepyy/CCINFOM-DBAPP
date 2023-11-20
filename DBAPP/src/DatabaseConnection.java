@@ -30,7 +30,6 @@ public class DatabaseConnection {
             if (connection != null) {
                 System.out.println("Connected to the database!");
 
-                // Your database operations here
 
             } else {
                 System.out.println("Failed to make a connection!");

@@ -11,10 +11,9 @@ public class Medicine {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO medicine (medicineid, brandname, genericname, category, medtype, amount, expiration, isdonated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
 
-            // Get user input for the new medicine
             System.out.println("Enter Medicine ID:");
             int medicineId = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
             System.out.println("Enter Brand Name:");
             String brandName = scanner.nextLine();
             System.out.println("Enter Generic Name:");
@@ -30,7 +29,6 @@ public class Medicine {
             System.out.println("Is Donated? (true/false):");
             boolean isDonated = scanner.nextBoolean();
 
-            // Set parameters for the prepared statement
             preparedStatement.setInt(1, medicineId);
             preparedStatement.setString(2, brandName);
             preparedStatement.setString(3, genericName);
@@ -40,7 +38,6 @@ public class Medicine {
             preparedStatement.setString(7, expiration);
             preparedStatement.setBoolean(8, isDonated);
 
-            // Execute the insert statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("New medicine added successfully!");
@@ -54,12 +51,10 @@ public class Medicine {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "UPDATE medicine SET brandname = ?, genericname = ?, category = ?, medtype = ?, amount = ?, expiration = ?, isdonated = ? WHERE medicineid = ?")) {
 
-            // Get user input for the medicine to update
             System.out.println("Enter Medicine ID to update:");
             int medicineId = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
-            // Get user input for the updated information
             System.out.println("Enter Brand Name:");
             String brandName = scanner.nextLine();
             System.out.println("Enter Generic Name:");
@@ -75,7 +70,6 @@ public class Medicine {
             System.out.println("Is Donated? (true/false):");
             boolean isDonated = scanner.nextBoolean();
 
-            // Set parameters for the prepared statement
             preparedStatement.setString(1, brandName);
             preparedStatement.setString(2, genericName);
             preparedStatement.setString(3, category);
@@ -85,7 +79,6 @@ public class Medicine {
             preparedStatement.setBoolean(7, isDonated);
             preparedStatement.setInt(8, medicineId);
 
-            // Execute the update statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Medicine updated successfully!");
@@ -99,14 +92,11 @@ public class Medicine {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "DELETE FROM medicine WHERE medicineid = ?")) {
 
-            // Get user input for the medicine to delete
             System.out.println("Enter Medicine ID to delete:");
             int medicineId = scanner.nextInt();
 
-            // Set parameter for the prepared statement
             preparedStatement.setInt(1, medicineId);
 
-            // Execute the delete statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Medicine deleted successfully!");
@@ -120,25 +110,18 @@ public class Medicine {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM medicine WHERE medicineid = ?")) {
 
-            // Get user input for the medicine ID to search
             System.out.println("Enter Medicine ID to search:");
             int medicineId = scanner.nextInt();
 
-            // Set parameter for the prepared statement
             preparedStatement.setInt(1, medicineId);
 
-            // Execute the select statement
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    // Display the search results
                     System.out.println("Search results:");
                     do {
                         int foundMedicineId = resultSet.getInt("medicineid");
-                        // Retrieve other fields as needed
 
-                        // Display the data
                         System.out.println("Medicine ID: " + foundMedicineId);
-                        // Display other fields
                         System.out.println();
                     } while (resultSet.next());
                 } else {
