@@ -23,9 +23,9 @@ and open the template in the editor.
         <div class="container">
             <h1>Add a Patient</h1>
                     <hr>
-                    <jsp:useBean id="medBean" class="dbapplication.medicine" scope="session" />
-                    <% medBean.loadProducts(); %>
-                    <form name="selectproduct" action="addcart.jsp" method="POST">
+                    <jsp:useBean id="medBean" class="dbapplication.Patient" scope="session" />
+                    <% medBean.addRecord(); %>
+                    <form name="addpatient" action="patient-add.jsp" method="POST">
                         First Name: <input type="text" name="firstname" id="fname"><br>
                         Last Name:  <input type="text" name="lastname" id="lname"><br>
                         Middle Name:  <input type="text" name="lastname" id="mname"><br>
