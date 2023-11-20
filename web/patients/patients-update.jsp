@@ -134,7 +134,7 @@
                         </form>
         <%
                     } else {
-                        // Record not found, display a message(
+                        // Record not found, display a message()
         %>
                         <p>Record not found.</p>
         <%
