@@ -2,7 +2,7 @@ public class HealthFacility {
         public int facilityid;
         public String name;
         public int maxcapacity;
-        //private facilitytype;
+        public char facilitytype;
         public int zipcode;
         public String streetno;
         public String streetname;
@@ -30,14 +30,14 @@ public class HealthFacility {
                 pstmt.setInt    (1, facilityid);
                 pstmt.setString (2, name);
                 pstmt.setInt    (3, maxcapacity);
-                //pstmt.set     (4, facilitytype);
-                pstmt.setInt    (4, zipcode);
-                pstmt.setString (5, streetno);
-                pstmt.setString (6, streetname);
-                pstmt.setString (7, barangay);
-                pstmt.setString (8, city);
-                pstmt.setString (9, province);
-                pstmt.setString (10, region);
+                pstmt.setChar   (4, facilitytype);
+                pstmt.setInt    (5, zipcode);
+                pstmt.setString (6, streetno);
+                pstmt.setString (7, streetname);
+                pstmt.setString (8, barangay);
+                pstmt.setString (9, city);
+                pstmt.setString (10, province);
+                pstmt.setString (11, region);
 
                 // 6. Execute the SQL Statement
                 pstmt.executeUpdate();   
@@ -64,6 +64,7 @@ public class HealthFacility {
                 PreparedStatement pstmt = conn.prepareStatement("UPDATE health_facility   " +
                                                                 "SET    name          = ?," +
                                                                 "       maxcapacity   = ?," +
+                                                                "       facilitytype  = ?," +
                                                                 "       zipcode       = ?," +
                                                                 "       streetno      = ?," +
                                                                 "       streetname    = ?," +
@@ -74,19 +75,17 @@ public class HealthFacility {
                                                                 "WHERE  personid      = ? "
                                                                 );
                 // 5. Supply the statement with values
-                // 5. Supply the statement with values
-
                 pstmt.setString (1, name);
                 pstmt.setInt    (2, maxcapacity);
-                //pstmt.set     (3, facilitytype);
-                pstmt.setInt    (3, zipcode);
-                pstmt.setString (4, streetno);
-                pstmt.setString (5, streetname);
-                pstmt.setString (6, barangay);
-                pstmt.setString (7, city);
-                pstmt.setString (8, province);
-                pstmt.setString (9, region);
-                pstmt.setInt    (10, facilityid);
+                pstmt.setChar   (3, facilitytype);
+                pstmt.setInt    (4, zipcode);
+                pstmt.setString (5, streetno);
+                pstmt.setString (6, streetname);
+                pstmt.setString (7, barangay);
+                pstmt.setString (8, city);
+                pstmt.setString (9, province);
+                pstmt.setString (10, region);
+                pstmt.setInt    (11, facilityid);
 
                 // 6. Execute the SQL Statement
                 pstmt.executeUpdate();   
@@ -145,7 +144,7 @@ public class HealthFacility {
                     facilityid      = rs.getInt("facilityid");
                     name            = rs.getString("name");
                     maxcapacity     = rs.getInt("maxcapacity");
-                    // facilitytype
+                    facilitytype    = rs.getChar("facilitytype");
                     zipcode         = rs.getInt("zipcode");
                     streetno        = rs.getString("streetno");
                     streetname      = rs.getString("streetname");
