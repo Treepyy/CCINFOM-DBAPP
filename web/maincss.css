@@ -50,6 +50,12 @@ hr {
   opacity:1;
 }
 
+.normbtn:disabled {
+    background-color: #dddddd;
+    color: #999999; 
+    cursor: not-allowed; 
+}
+
 a {
   color: dodgerblue;
 }

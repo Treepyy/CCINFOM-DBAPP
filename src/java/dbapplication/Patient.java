@@ -17,7 +17,7 @@ public class Patient {
         
         public int patientid;
         public String firstname, lastname, middlename;
-        public Date birthday;
+        public Date birthday, admission, discharge;
         public String gender;
         public int age;
         public String filepath;
@@ -34,6 +34,39 @@ public class Patient {
                 throw new IllegalArgumentException("Birthdate and currentDate must not be null");
             }
         }
+        
+        private int generatePatientID(){
+            
+            int newPatientId = 1000;
+            
+             try {
+                // 1. Instantiate a connection variable
+                Connection conn;     
+                // 2. Connect to your DB
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+                // 3. Indicate a notice of successful connection
+                System.out.println("Connection Successful");
+                
+                String query = "SELECT MAX(personid) AS maxId FROM person";
+                try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                    // Execute the query
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        if (resultSet.next()) {
+                            // Get the maximum patient ID from the result set
+                            int maxPatientId = resultSet.getInt("maxId");
+
+                            // Increment the maximum patient ID to get the new patient ID
+                            newPatientId = maxPatientId + 1;
+                        }
+                    }
+                }
+                return newPatientId;
+            } catch (SQLException e) {
+                    System.out.println(e.getMessage());  
+                    return 0;
+                }  
+             
+        }
     
         public int addRecord(){
             try {
@@ -47,7 +80,8 @@ public class Patient {
                 PreparedStatement pstmt = conn.prepareStatement("INSERT INTO person VALUES (?,?,?,?,?,?,?,?)");
 
                 age = calculateAge(birthday.toLocalDate(), LocalDate.now());
-
+                patientid = generatePatientID();
+                         
                 // 5. Supply the statement with values
                 pstmt.setInt    (1, patientid);
                 pstmt.setString (2, firstname);
@@ -59,8 +93,17 @@ public class Patient {
                 pstmt.setString (8, filepath);
 
                 // 6. Execute the SQL Statement
-                pstmt.executeUpdate();   
+                pstmt.executeUpdate();
+                
+                PreparedStatement patientPstmt = conn.prepareStatement("INSERT INTO patient VALUES (?,?,?)");
+                patientPstmt.setInt(1, patientid);
+                patientPstmt.setDate(2, admission);
+                patientPstmt.setDate(3, discharge);
+                
+                patientPstmt.executeUpdate();
+                
                 pstmt.close();
+                patientPstmt.close();
                 conn.close();
                 return 1;
             } catch (SQLException e) {
@@ -144,7 +187,19 @@ public class Patient {
                 // 3. Indicate a notice of successful connection
                 System.out.println("Connection Successful");
                 // 4. Prepare our INSERT Statement
-                PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM person WHERE personid = ?");
+                PreparedStatement pstmt = conn.prepareStatement(
+                           "SELECT personid, firstname, lastname, middlename, gender, birthday, age, picture, admission, discharge"+
+                           "FROM person"+
+                           "JOIN patient ON patient.patientid = person.personid"+
+                           "WHERE personid = ?;"
+                        );
+                
+                /*
+                SELECT personid, firstname, lastname, middlename, gender, birthday, age, picture, admission, discharge
+                FROM person
+                JOIN patient ON patient.patientid = person.personid
+                WHERE personid = ?;
+                */
                 // 5. Supply the statement with values
                 pstmt.setInt    (1, patientid);
 
@@ -161,6 +216,8 @@ public class Patient {
                     birthday     = rs.getDate("birthday");
                     age          = rs.getInt("age");
                     filepath     = rs.getString("picture");
+                    admission    = rs.getDate("admission");
+                    discharge    = rs.getDate("discharge");
                 }
                 
                 rs.close();
@@ -176,7 +233,6 @@ public class Patient {
      public static void main (String[] args) {
         Patient testp = new Patient();
         
-        testp.patientid = 2001;
         testp.firstname = "Bob";
         testp.lastname = "Bobby";
         testp.middlename = "Bobbins";
