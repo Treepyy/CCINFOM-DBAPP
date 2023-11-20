@@ -1,38 +1,72 @@
---May idaragdag pa ako sa tables kaya temporary script lang 'to 
+USE DBAPP;
 
 CREATE TABLE person(
     personid        INT(4),
-    firstname       VARCHAR(45),
-    lastname        VARCHAR(45),
+    firstname       VARCHAR(45) NOT NULL,
+    lastname        VARCHAR(45) NOT NULL,
     middlename      VARCHAR(45),
     gender          ENUM('M', 'F'),
-    birthday        DATE,
-    age             INT(3),
+    birthday        DATE NOT NULL,
+    age             INT(3) NOT NULL,
     picture         VARCHAR(45),
     primary key (personid)
 );
 
-CREATE TABLE patient(
-    patientid       INT(4),
-    admission       DATE,
-    discharge       DATE,
-    primary key (patientid),
-    foreign key (patientid) REFERENCES   
-        person (personid)
-);
-
 CREATE TABLE donor(
-    donorid         INT(4),
-    mobileno        INT(12),
+    donorid         INT(4) NOT NULL,
+    mobileno        VARCHAR(12),
     primary key (donorid),
     foreign key (donorid) REFERENCES   
         person (personid)
 );
 
+CREATE TABLE health_facility(
+    facilityid      INT(6),
+    facilityname    VARCHAR(45) NOT NULL,
+    maxcapacity     INT(3) NOT NULL,
+    facilitytype    ENUM('C','H','P') NOT NULL, 
+    zipcode			INT(4) NOT NULL,
+    streetno        VARCHAR(45),
+    streetname      VARCHAR(45),
+    baranggay       VARCHAR(45),
+    city            VARCHAR(45) NOT NULL,
+    province        VARCHAR(45) NOT NULL,
+    region          VARCHAR(45) NOT NULL,
+    primary key (facilityid)
+);
+
+CREATE TABLE medicine(
+    medicineid      INT(3),
+    facilityid		INT(6),
+    brandname       VARCHAR(45),
+    genericname     VARCHAR(45) NOT NULL,
+    category        VARCHAR(45) NOT NULL, 
+    medtype         VARCHAR(45) NOT NULL,
+    amount          INT(4) NOT NULL,
+    expiration      DATE NOT NULL,
+    isdonated       BOOLEAN,
+    primary key (medicineid)
+);
+
+CREATE TABLE patient(
+    patientid       INT(4),
+    facilityid      INT(6),
+    admission       DATE,
+    discharge       DATE,
+    patientstatus	ENUM('U','D','M'),
+    primary key (patientid),
+    foreign key (patientid) REFERENCES   
+        person (personid),
+    foreign key (facilityid) REFERENCES
+        health_facility (facilityid)
+);
+
 CREATE TABLE donation(
-    donationid      INT(5),
-    donor           INT(4),
-    facility        INT(6),
+    donationid      INT(5) NOT NULL,
+    donor           INT(4) NOT NULL,
+    facility        INT(6) NOT NULL,
+    medicine		INT(3) NOT NULL,
+    donationdate	DATE NOT NULL,
     primary key(donationid),
     foreign key (donor) REFERENCES   
         donor (donorid),  
@@ -40,53 +74,32 @@ CREATE TABLE donation(
         health_facility (facilityid) 
 );
 
-CREATE TABLE health_facility(
-    facilityid      INT(6),
-    facilityname    VARCHAR(45),
-    maxcapacity     INT(3),
-    facilitytype    ENUM('C','H','HC') --Clinic, Hospital, Health Center
-    streetno        VARCHAR(45),
-    streetname      VARCHAR(45),
-    baranggay        VARCHAR(45),
-    city            VARCHAR(45),
-    province        VARCHAR(45),
-    region          VARCHAR(45),
-    primary key (facilityid),
-);
-
 CREATE TABLE nondonated_medicine(
-    medicineid      INT(3),
+    medicineid      INT(3) NOT NULL,
+    facilityid      INT(6),
     foreign key (medicineid) REFERENCES
-        medicine (medicineid)
-
+        medicine (medicineid),
+    foreign key (facilityid) REFERENCES
+        health_facility (facilityid)
 );
 
 CREATE TABLE donated_medicine(
-    donationid      INT(5),
-    medicineid      INT(3),
+    donationid      INT(5) NOT NULL,
+    medicineid      INT(3) NOT NULL,
+    facilityid      INT(6) NOT NULL, 
     foreign key (donationid) REFERENCES
         donation (donationid),
     foreign key (medicineid) REFERENCES
-        medicine (medicineid)
-);
-
-CREATE TABLE medicine(
-    medicineid      INT(3),
-    brandname       VARCHAR(45),
-    genericname     VARCHAR(45),
-    category        VARCHAR(45), --Antibiotic eme
-    medtype         ENUM('L', 'T', 'C'), --Liquid, Tablet, Capsule
-    amount          INT(4),
-    expiration      DATE,
-    isdonated       BOOLEAN,
-    primary key (medicineid)
+        medicine (medicineid),
+    foreign key (facilityid) REFERENCES
+        health_facility (facilityid)
 );
 
 CREATE TABLE medication_tracking(
-    patientid       INT(4),
-    facilityid      INT(6),
-    medicineid      INT(3),
-    administer      DATE,
+    patientid       INT(4) NOT NULL,
+    facilityid      INT(6) NOT NULL,
+    medicineid      INT(3) NOT NULL,
+    administer      DATE NOT NULL,
     primary key (patientid, medicineid),
     foreign key (patientid) REFERENCES
         patient (patientid),
@@ -99,58 +112,69 @@ CREATE TABLE medication_tracking(
 
 INSERT INTO person (personid, firstname, lastname, middlename, gender, birthday, age, picture)
     VALUES
-        (1001, 'Rafael Enrico', 'Hugo', 'Camila', 'M', '2003-21-01', '20', 'Rafael.jpg'),
-        (1002, 'Vance Gyan', 'Robles', 'M--', 'M', '2003-06-27', '20', 'Vance.jpg'),
-        (1003, 'Dominic Joel', 'Gomez', 'M--', 'M', '2003-04-05', '20', 'Dominic.jpg'),
-        (1004, 'Ryan Clemence', 'Vasquez', 'R--', 'M', '2003-12-25', '19', 'Ryan.jpg');
-
-INSERT INTO patient (patientid, admission, discharge)
-    VALUES
-        (1002, '2020-03-16', NULL),
-        (1003, '2021-05-21', '2021-07-28');
+        (1001, 'Rafael Enrico', 'Hugo', 'C', 'M', '2003-01-21', '20', 'Rafael.jpg'),
+        (1002, 'Vance Gyan', 'Robles', 'M', 'M', '2003-06-27', '20', 'Vance.jpg'),
+        (1003, 'Dominic Joel', 'Gomez', 'M', 'M', '2003-04-05', '20', 'Dominic.jpg'),
+        (1004, 'Ryan Clemence', 'Vasquez', 'R', 'M', '2003-12-25', '19', 'Ryan.jpg'),
+        (1005, 'Edgar Allan', 'Poe', NULL, 'M', '1950-11-11', '73', NULL);
 
 INSERT INTO donor (donorid, mobileno)
     VALUES
-        (1001, 9451569)
-        (1004, 9876108)
+        (1001, '09451234567'),
+        (1004, '09171234567');
 
-INSERT INTO donation (donationid, donor, facility)
-    VALUES
-        (50001, 1001, 600001),
-        (50002, 1001, 600001),
-        (50003, 1001, 600002),
-        (50004, 1004, 600001),
-        (50005, 1004, 600002),
-        (50006, 1004, 600002);
+INSERT INTO health_facility (facilityid, facilityname, maxcapacity, facilitytype, zipcode, streetno, streetname, baranggay, city, province, region)
+    VALUE
+        (600001, 'Philippine General Hospital', 300, 'H', 1000, NULL, 'Taft Avenue', 'Brgy. 674', 'Manila', 'Metro Manila', 'NCR'),
+        (600002, 'St. Peter Paul Medical Clinic', 200, 'C', 1182, NULL, 'Grey Street', 'Brgy. 668', 'Manila', 'Metro Manila', 'NCR'),
+        (600003, 'De La Salle University Medical Center', 200, 'H', 4114, NULL, 'Governor D Mangubat Avenue', NULL, 'Dasmariñas', 'Cavite', 'CaLaBarZon');
 
-INSERT INTO health_facility (facilityid, facilityname, maxcapacity, facilitytype, streetno, streetname, baranggay, city, province, region)
+INSERT INTO medicine (medicineid, facilityid, brandname, genericname, category, medtype, amount, expiration, isdonated)
     VALUES
-        (600001, 'Philippine General Hospital', 300, 'H', '1000','Taft Avenue', 'Brgy. 674', 'Manila', 'Metro Manila', 'NCR'),
-        (600002, 'St. Peter Paul Medical Clinic', 200, 'C', '1182', 'Grey Street', 'Brgy. 668', 'Manila', 'Metro Manila', 'NCR');
+        (301, 600001, 'Calpol', 'Paracetamol', 'Antibiotic', 'Tablet', 50, '2022-11-16', false),
+        (302, 600001, 'Tylenol', 'Paracetamol', 'Antibiotic', 'Capsule', 20, '2023-12-5', true),
+        (303, 600002, 'Cefalin', 'Cefalexin', 'Antibacterial', 'Tablet', 41, '2021-6-3', true),
+        (304, 600002, 'Histacort', 'Prednisolone Chlorphenamine Maleate', 'Antihistamine', 'Tablet', 24, '2022-7-12', true),
+        (305, 600003, 'Motivest', 'Fluoxetine', 'Antidepressant', 'Capsule', 67, '2024-1-30', false),
+        (306, 600001, 'Nasoflo', 'Fluticasone Propionate', 'Corticosteroid', 'Nasal Spray', 3, '2023-5-16', true),
+        (307, 600003, 'Pediachor', 'Chloramphenicol', 'Antibacterial', 'Liquid', 10, '2025-03-16', false),
+        (308, 600003, 'Biogesic', 'Paracetamol', 'Antibiotic', 'Tablet', 100, '2022-9-17', false),
+        (309, 600002, 'Glucophage', 'Metformin', 'Anti-diabetic', 'Tablet', 80, '2023-8-25', true),
+        (310, 600002, 'Fortamet', 'Metformin', 'Anti-diabetic', 'Tablet', 75, '2022-7-30', true);
 
-INSERT INTO nondonated_medicine (medicineid)
+INSERT INTO patient (patientid, facilityid, admission, discharge, patientstatus)
     VALUES
-        (301),
-        (305),
-        (307),
-        (308);
+        (1002, 600001, '2020-03-16', NULL, 'U'),
+        (1003, 600001, '2021-05-21', '2021-07-28', 'D'),
+        (1005, NULL, NULL, NULL, NULL);
 
-INSERT INTO donated_medicine (donationid, medicineid)
+INSERT INTO donation (donationid, donor, facility, medicine, donationdate)
     VALUES
-        (50001, 302),
-        (50002, 303),
-        (50003, 304),
-        (50004, 306),
-        (50005, 309),
-        (50006, 310);
+        (50001, 1001, 600001, 302, '2020-01-21'),
+        (50002, 1001, 600001, 303, '2020-07-14'),
+        (50003, 1001, 600002, 304, '2019-11-30'),
+        (50004, 1004, 600001, 306, '2019-05-20'),
+        (50005, 1004, 600002, 309, '2019-04-20'),
+        (50006, 1004, 600002, 310, '2020-09-23');
 
-INSERT INTO medicine (medicineid, brandname, genericname, category, medtype, amount, expiration, isdonated)
+INSERT INTO nondonated_medicine (medicineid, facilityid)
     VALUES
-        (301, 'Calpol', 'Paracetamol', 'Antibiotic', 'Analgesic', 'T', '50', '2022-11-16', false),
+        (301, 600001),
+        (305, 600003),
+        (307, 600003),
+        (308, 600003);
+
+INSERT INTO donated_medicine (donationid, medicineid, facilityid)
+    VALUES
+        (50001, 302, 600001),
+        (50002, 303, 600001),
+        (50003, 304, 600002),
+        (50004, 306, 600001),
+        (50005, 309, 600002),
+        (50006, 310, 600002);
 
 INSERT INTO medication_tracking (patientid, facilityid, medicineid, administer)
     VALUES
         (1002, 600001, 303, '2020-4-20'),
         (1003, 600002, 305, '2021-05-30');
-
 
