@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public class Donor {
-        
         public int donorid;
         public String firstname, lastname, middlename;
         public Date birthday;
@@ -26,7 +25,40 @@ public class Donor {
                 throw new IllegalArgumentException("Birthdate and currentDate must not be null");
             }
         }
-    
+
+        private int generateDonorID(){
+            
+            int newDonorId = 1000;
+            
+             try {
+                // 1. Instantiate a connection variable
+                Connection conn;     
+                // 2. Connect to your DB
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+                // 3. Indicate a notice of successful connection
+                System.out.println("Connection Successful");
+                
+                String query = "SELECT MAX(personid) AS maxId FROM person";
+                try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                    // Execute the query
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        if (resultSet.next()) {
+                            // Get the maximum donor ID from the result set
+                            int maxDonorId = resultSet.getInt("maxId");
+        
+                            // Increment the maximum patient ID to get the new patient ID
+                            newDonorId = maxDonorId + 1;
+                        }
+                    }
+                }
+                return newDonorId;
+            } catch (SQLException e) {
+                    System.out.println(e.getMessage());  
+                    return 0;
+                }  
+             
+        }
+        
         public int addRecord(){
             try {
                 // 1. Instantiate a connection variable
@@ -37,11 +69,12 @@ public class Donor {
                 System.out.println("Connection Successful");
                 // 4. Prepare our INSERT Statement
                 PreparedStatement pstmt = conn.prepareStatement("INSERT INTO person VALUES (?,?,?,?,?,?,?,?)");
-
+        
                 age = calculateAge(birthday.toLocalDate(), LocalDate.now());
-
+                donorid = generateDonorID();
+                         
                 // 5. Supply the statement with values
-                pstmt.setInt    (1, donorid);
+                pstmt.setInt    (1, patientid);
                 pstmt.setString (2, firstname);
                 pstmt.setString (3, lastname);
                 pstmt.setString (4, middlename);
@@ -49,11 +82,18 @@ public class Donor {
                 pstmt.setDate   (6, birthday);
                 pstmt.setInt    (7, age);
                 pstmt.setString (8, filepath);
-                pstmt.setString (9, mobileno);
-
+        
                 // 6. Execute the SQL Statement
-                pstmt.executeUpdate();   
+                pstmt.executeUpdate();
+                
+                PreparedStatement donorPstmt = conn.prepareStatement("INSERT INTO donor VALUES (?,?)");
+                donorPstmt.setInt(1, donorid);
+                donorPstmt.setString(2, mobileno);
+        
+                donorPstmt.executeUpdate();
+                
                 pstmt.close();
+                donorPstmt.close();
                 conn.close();
                 return 1;
             } catch (SQLException e) {
@@ -78,11 +118,9 @@ public class Donor {
                                                                 "       gender        = ?," +
                                                                 "       birthday      = ?," +
                                                                 "       age           = ?," +
-                                                                "       filepath      = ?," +
-                                                                "       mobileno      = ? " +
+                                                                "       filepath      = ? " +
                                                                 "WHERE  personid      = ? "
                                                                 );
-                // 5. Supply the statement with values
                 // 5. Supply the statement with values
                 pstmt.setString (1, firstname);
                 pstmt.setString (2, lastname);
@@ -91,12 +129,23 @@ public class Donor {
                 pstmt.setDate   (5, birthday);
                 pstmt.setInt    (6, age);
                 pstmt.setString (7, filepath);
-                pstmt.setString (8, mobileno);
-                pstmt.setInt    (9, patientid);
-
-                // 6. Execute the SQL Statement
+                pstmt.setInt    (8, donorid);
+                
                 pstmt.executeUpdate();   
                 pstmt.close();
+                
+                PreparedStatement donorPstmt = conn.prepareStatement("UPDATE donor           " +
+                                                                       "SET    mobileno     = ?," +
+                                                                       "WHERE  personid      = ? "
+                                                                       );
+                                                                
+                donorPstmt.setString (1, mobileno);
+                donorPstmt.setInt (2, donorid);
+               
+                
+                donorPstmt.executeUpdate();
+                donorPstmt.close();
+        
                 conn.close();
                 return 1;
                 
