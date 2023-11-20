@@ -68,7 +68,9 @@
         <%
             }
         %>
-        <button onclick="location.href = '${returnurl}';" class="normbtn">Return to Previous Menu</button>
+        <button onclick="location.href = '${returnurl}';" class="normbtn">Return</button><br>
+        <button onclick="location.href = 'selection-patients.jsp';" class="normbtn">${buttonLbl}</button>
+        
     </div>
 </body>
 </html>

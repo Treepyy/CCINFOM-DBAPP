@@ -49,7 +49,8 @@
 
         // Add the record to the database
         int result = medBean.addRecord();
-        String message, returnurl = "patients-add.jsp";
+        String message, buttonLbl, returnurl = "patients-add.jsp";
+        buttonLbl = "Add Another Record";
         
         // Check the result and perform further actions (e.g., display a success message or handle errors)
         if (result == 1) {
@@ -71,6 +72,7 @@
         
         session.setAttribute("message", message);
         session.setAttribute("returnurl", returnurl);
+        session.setAttribute("buttonLbl", buttonLbl);
         response.sendRedirect("results-display.jsp");
     }
 %>

@@ -132,7 +132,6 @@ public class Patient {
                                                                 "WHERE  personid      = ? "
                                                                 );
                 // 5. Supply the statement with values
-                // 5. Supply the statement with values
                 pstmt.setString (1, firstname);
                 pstmt.setString (2, lastname);
                 pstmt.setString (3, middlename);
@@ -141,10 +140,23 @@ public class Patient {
                 pstmt.setInt    (6, age);
                 pstmt.setString (7, filepath);
                 pstmt.setInt    (8, patientid);
-
-                // 6. Execute the SQL Statement
+                
                 pstmt.executeUpdate();   
                 pstmt.close();
+                
+                PreparedStatement patientPstmt = conn.prepareStatement("UPDATE patient           " +
+                                                                       "SET    admission     = ?," +
+                                                                       "       discharge     = ? " +
+                                                                       "WHERE  personid      = ? "
+                                                                       );
+                                                                
+                patientPstmt.setDate (1, admission);
+                patientPstmt.setDate (2, discharge);
+                patientPstmt.setInt (3, patientid);
+                
+                patientPstmt.executeUpdate();
+                patientPstmt.close();
+
                 conn.close();
                 return 1;
                 
@@ -188,10 +200,10 @@ public class Patient {
                 System.out.println("Connection Successful");
                 // 4. Prepare our INSERT Statement
                 PreparedStatement pstmt = conn.prepareStatement(
-                           "SELECT personid, firstname, lastname, middlename, gender, birthday, age, picture, admission, discharge"+
-                           "FROM person"+
-                           "JOIN patient ON patient.patientid = person.personid"+
-                           "WHERE personid = ?;"
+                           "SELECT personid, firstname, lastname, middlename, gender, birthday, age, picture, admission, discharge " + 
+                           "FROM person JOIN patient " + 
+                           "ON patient.patientid = person.personid " +
+                           "WHERE  personid = ?;"
                         );
                 
                 /*
@@ -233,13 +245,16 @@ public class Patient {
      public static void main (String[] args) {
         Patient testp = new Patient();
         
+        testp.patientid = 1002;
+        testp.viewRecord();
+        /*
         testp.firstname = "Bob";
         testp.lastname = "Bobby";
         testp.middlename = "Bobbins";
         testp.birthday = Date.valueOf(LocalDate.of(2002, 06, 22));
         testp.filepath = "Bob.png";
         testp.gender = "M";
-        testp.addRecord();
+        testp.addRecord();*/
         
         // OD.ordernumber = 8001;
         // OD.pcode       = 7002;
