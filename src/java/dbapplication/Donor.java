@@ -1,8 +1,23 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
+/**
+ *
+ * @author ccslearner
+ */
 package dbapplication;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 
 public class Donor {
         public int donorid;
@@ -17,7 +32,7 @@ public class Donor {
      
         }
         
-        private int calculateAge(LocalDate birthdate, LocalDate currentDate) {
+        public int calculateAge(LocalDate birthdate, LocalDate currentDate) {
             if ((birthdate != null) && (currentDate != null)) {
                 return Period.between(birthdate, currentDate).getYears();
             } 
@@ -58,8 +73,60 @@ public class Donor {
                 }  
              
         }
+
+        public ArrayList<Integer> list_donors() {
+            ArrayList<Integer> donor_idlist = new ArrayList<>();
+            
+            try {
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+                PreparedStatement sql_statement = conn.prepareStatement("SELECT      donorid " + 
+                                                                         "FROM       donor "  +
+                                                                         "ORDER BY   donorid");
+                ResultSet results = sql_statement.executeQuery();
+                
+                donor_idlist.clear();
+                
+                while(results.next()) {
+                    donor_idlist.add(results.getInt("donorid"));
+                }
+
+                sql_statement.close();
+                conn.close();
+
+                return donor_idlist;
+            } catch(SQLException e) {
+                return donor_idlist;
+            }
+        }
         
-        public int addRecord(){
+        public ArrayList<Integer> list_deletable_donors() {
+            ArrayList<Integer> deletable_idlist = new ArrayList<> ();
+
+            try {
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+                PreparedStatement sql_statement = conn.prepareStatement("SELECT donorid " +
+                                                                        "FROM   donor  " +
+                                                                        "WHERE  donorid NOT IN (SELECT  donor " +
+                                                                        "                       FROM    donation) " +
+                                                                        "ORDER BY donorid");
+                ResultSet results = sql_statement.executeQuery();
+
+                deletable_idlist.clear();
+
+                while(results.next()) {
+                    deletable_idlist.add(results.getInt("donorid"));
+                }
+
+                sql_statement.close();
+                conn.close();
+
+                return deletable_idlist;
+            } catch(SQLException e) {
+                return deletable_idlist;
+            }
+        }
+        
+        public int addRecord(String firstname, String middlename, String lastname, String gender, String birthday, String mobileno, String filepath){
             try {
                 // 1. Instantiate a connection variable
                 Connection conn;     
@@ -70,16 +137,16 @@ public class Donor {
                 // 4. Prepare our INSERT Statement
                 PreparedStatement pstmt = conn.prepareStatement("INSERT INTO person VALUES (?,?,?,?,?,?,?,?)");
         
-                age = calculateAge(birthday.toLocalDate(), LocalDate.now());
+                age = calculateAge(LocalDate.parse(birthday), LocalDate.now());
                 donorid = generateDonorID();
                          
                 // 5. Supply the statement with values
-                pstmt.setInt    (1, patientid);
+                pstmt.setInt    (1, donorid);
                 pstmt.setString (2, firstname);
                 pstmt.setString (3, lastname);
                 pstmt.setString (4, middlename);
                 pstmt.setString (5, gender);
-                pstmt.setDate   (6, birthday);
+                pstmt.setString (6, birthday);
                 pstmt.setInt    (7, age);
                 pstmt.setString (8, filepath);
         
@@ -95,14 +162,14 @@ public class Donor {
                 pstmt.close();
                 donorPstmt.close();
                 conn.close();
-                return 1;
+                return donorid;
             } catch (SQLException e) {
                     System.out.println(e.getMessage());  
                     return 0;
                 }  
         }
         
-        public int modRecord () {           // Method modify a Record
+        public int modRecord (int donorid, String firstname, String middlename, String lastname, String gender, String birthday, String mobileno, String filepath) {           // Method modify a Record
             try {
                 // 1. Instantiate a connection variable
                 Connection conn;     
@@ -118,15 +185,17 @@ public class Donor {
                                                                 "       gender        = ?," +
                                                                 "       birthday      = ?," +
                                                                 "       age           = ?," +
-                                                                "       filepath      = ? " +
+                                                                "       picture      = ? " +
                                                                 "WHERE  personid      = ? "
                                                                 );
+                
+                age = calculateAge(LocalDate.parse(birthday), LocalDate.now());
                 // 5. Supply the statement with values
                 pstmt.setString (1, firstname);
                 pstmt.setString (2, lastname);
                 pstmt.setString (3, middlename);
                 pstmt.setString (4, gender);
-                pstmt.setDate   (5, birthday);
+                pstmt.setString (5, birthday);
                 pstmt.setInt    (6, age);
                 pstmt.setString (7, filepath);
                 pstmt.setInt    (8, donorid);
@@ -135,13 +204,12 @@ public class Donor {
                 pstmt.close();
                 
                 PreparedStatement donorPstmt = conn.prepareStatement("UPDATE donor           " +
-                                                                       "SET    mobileno     = ?," +
-                                                                       "WHERE  personid      = ? "
+                                                                     "SET    mobileno     = ? " +
+                                                                     "WHERE  donorid      = ? "
                                                                        );
                                                                 
                 donorPstmt.setString (1, mobileno);
                 donorPstmt.setInt (2, donorid);
-               
                 
                 donorPstmt.executeUpdate();
                 donorPstmt.close();
@@ -155,7 +223,7 @@ public class Donor {
             }         
         }
         
-        public int delRecord () {           // Method delete a Record
+        public int delRecord (int donorid) {           // Method delete a Record
             try {
                 // 1. Instantiate a connection variable
                 Connection conn;     
@@ -163,13 +231,21 @@ public class Donor {
                 conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
                 // 3. Indicate a notice of successful connection
                 System.out.println("Connection Successful");
-                // 4. Prepare our INSERT Statement
-                PreparedStatement pstmt = conn.prepareStatement("DELETE FROM person WHERE personid = ?");
+                // 4. Prepare our INSERT Statement 
+                PreparedStatement pstmt = conn.prepareStatement("DELETE FROM donor WHERE donorid = ?");
                 // 5. Supply the statement with values
                 pstmt.setInt    (1, donorid);
 
                 // 6. Execute the SQL Statement
-                pstmt.executeUpdate();   
+                pstmt.executeUpdate();
+                
+                pstmt = conn.prepareStatement("DELETE FROM person WHERE personid = ?");
+                
+                pstmt.setInt(1, donorid);
+                
+                pstmt.executeUpdate();
+                
+                
                 pstmt.close();
                 conn.close();
                 return 1;
@@ -179,234 +255,7 @@ public class Donor {
             }         
         }
 
-        public int searchRecord() {
-            try { 
-                // 1. Instantiate a connection variable
-                Connection conn;     
-                // 2. Connect to your DB
-                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
-                // 3. Indicate a notice of successful connection
-                System.out.println("Connection Successful");
-
-                //Search queries (firstname, lastname, gender, birthday, age)
-
-                temp_donoridlist.clear();
-
-                // 4.1 Create query based on search (firstname)
-                PreparedStatement pstmt = conn.prepareStatement("SELECT d.donorid 
-                                                                FROM   donor d    LEFT JOIN person p ON (p.personid = d.donorid) 
-                                                                WHERE (CASE WHEN ? = 0 
-                                                                            THEN p.firstname = ? 
-                                                                            ELSE p.firstname != '' END)");
-                if(firstname_fromhtml == "")
-                {
-                    pstmt.setInt(1, 1);
-                    pstmt.setString(2, null);
-                }
-                else
-                {
-                    pstmt.setInt(1, 0);
-                    pstmt.setString(2, firstname_fromhtml);
-                }
-                    
-                ResultSet rst = pstmt.executeQuery();
-
-                containList(rst);
-
-                //-----------------------------------------------End of 4.1
-
-                // 4.2 Create query based on search (lastname)
-                StringBuilder sql = new StringBuilder("SELECT d.donorid 
-                                                    FROM donor d LEFT JOIN person p ON (p.personid = d.donorid) 
-                                                    WHERE (CASE WHEN ? = 0 
-                                                                THEN p.lastname = ? 
-                                                                ELSE p.lastname != '' END) 
-                                                    AND d.donorid IN (");
-                
-                addString(sql);
-                
-                pstmt = conn.prepareStatement(sql.toString());
-
-                if(firstname_fromhtml.equals(""))
-                {
-                    pstmt.setInt(1, 1);
-                    pstmt.setNull(2, java.sql.Types.VARCHAR);   
-                }
-                else
-                {
-                    pstmt.setInt(1, 0);
-                    pstmt.setString(2, firstname_fromhtml);
-                }
-                
-                set_idList(pstmt);
-                temp_donoridlist.clear();
-            
-                rst = pstmt.executeQuery();
-
-                containList(rst);
-
-                //-----------------------------------------------End of 4.2
-
-                // 4.3 Create query based on search (gender)
-                StringBuilder sql = new StringBuilder("SELECT d.donorid 
-                                                    FROM donor d LEFT JOIN person p ON (p.personid = d.donorid) 
-                                                    WHERE (CASE WHEN ? = 0 
-                                                                THEN p.gender = ? 
-                                                                ELSE p.gender != '' END)  
-                                                    AND d.donorid IN (");
-                
-                addString(sql);
-                
-                pstmt = conn.prepareStatement(sql.toString());
-
-                if(gender_fromhtml.equals(""))
-                {
-                    pstmt.setInt(1, 1);
-                    pstmt.setNull(2, java.sql.Types.VARCHAR);   
-                }
-                else
-                {
-                    pstmt.setInt(1, 0);
-                    pstmt.setString(2, gender_fromhtml);
-                    
-                }
-                
-                set_idList(pstmt);
-                temp_donoridlist.clear();
-            
-                rst = pstmt.executeQuery();
-
-                containList(rst);
-
-                //-----------------------------------------------End of 4.3
-
-                // 4.4 Create query based on search (birthday)
-                StringBuilder sql = new StringBuilder("SELECT d.donorid 
-                                                    FROM donor d LEFT JOIN person p ON (p.personid = d.donorid) 
-                                                    WHERE (CASE WHEN ? = 0 
-                                                                THEN p.birthday = ? 
-                                                                ELSE p.birthday != '' END)  
-                                                    AND d.donorid IN (");
-                
-                addString(sql);
-                
-                pstmt = conn.prepareStatement(sql.toString());
-
-                if(birthday_fromhtml.equals(""))
-                {
-                    pstmt.setInt(1, 1);
-                    pstmt.setNull(2, java.sql.Types.VARCHAR);   
-                }
-                else
-                {
-                    pstmt.setInt(1, 0);
-                    pstmt.setString(2, birthday_fromhtml);
-                    
-                }
-                
-                set_idList(pstmt);
-                temp_donoridlist.clear();
-            
-                rst = pstmt.executeQuery();
-
-                containList(rst);
-
-                //-----------------------------------------------End of 4.4
-
-                // 4.5 Create query based on search (age)
-                StringBuilder sql = new StringBuilder("SELECT d.donorid 
-                                                    FROM donor d LEFT JOIN person p ON (p.personid = d.donorid) 
-                                                    WHERE (CASE WHEN ? = 0 
-                                                                THEN p.age = ? 
-                                                                ELSE p.age != '' END)  
-                                                    AND d.donorid IN (");
-                
-                addString(sql);
-                
-                pstmt = conn.prepareStatement(sql.toString());
-
-                if(age_fromhtml.equals(""))
-                {
-                    pstmt.setInt(1, 1);
-                    pstmt.setNull(2, java.sql.Types.VARCHAR);   
-                }
-                else
-                {
-                    pstmt.setInt(1, 0);
-                    pstmt.setString(2, age_fromhtml);
-                    
-                }
-                
-                set_idList(pstmt);
-                temp_donoridlist.clear();
-            
-                rst = pstmt.executeQuery();
-
-                containList(rst);
-
-                //-----------------------------------------------End of 4.5
-
-
-
-                sql = new StringBuilder("SELECT p.lastname, p.firstname, p.middlename, p.birthday, p.gender, p.age, p.mobileno
-                                        FROM donor d LEFT JOIN person p ON (p.personid = d.donorid)
-                                        WHERE d.donorid IN (");
-                
-                addString(sql);
-            
-                pstmt = conn.prepareStatement(sql.toString());
-                
-                for (int i = 0; i < temp_donoridlist.size(); i++) 
-                    pstmt.setString(i+1,temp_donoridlist.get(i));
-                        
-                rst= pstmt.executeQuery();
-                
-                // search_count = 0;
-                
-                // last_nameList.clear();
-                // first_nameList.clear();
-                // middle_nameList.clear();
-                // permanent_addressList.clear();
-                // current_addressList.clear();
-                // genderList.clear();
-                // birthdayList.clear();
-                // employment_start_dateList.clear();
-                // employment_end_dateList.clear();
-                
-                while (rst.next()) {
-                    p.lastname, p.firstname, p.middlename, p.birthday, p.gender, p.age, p.mobileno
-
-                    lastname = rst.getString("lastname");
-                    firstname = rst.getString("firstname");
-                    middlename = rst.getString("middlename");
-                    birthday = rst.getLocalDate("birthday");
-                    gender = rst.getChar("gender");
-                    age = rst.getInt("age");
-                    mobileno = rst.getString("mobileno");
-
-                    // last_nameList.add(last_name);
-                    // first_nameList.add(first_name);
-                    // middle_nameList.add(middle_name);
-                    // permanent_addressList.add(permanent_address);
-                    // current_addressList.add(current_address);
-                    // genderList.add(gender);
-                    // birthdayList.add(birthday); 
-                    // employment_start_dateList.add(employment_start_date);
-                    // employment_end_dateList.add(employment_end_date);
-                    // search_count++;
-                }
-
-            
-                // Closing Statements
-                pstmt.close();
-                conn.close();
-                return 1;
-
-            } catch(SQLException e){
-                e.printStackTrace();
-                return 0;
-            }
-        }
+        //public int searchRecord () {}
 
         public int viewRecord() {           // Method viewing a  - Getting something
             try {
@@ -419,14 +268,14 @@ public class Donor {
                 // 4. Prepare our INSERT Statement
                 PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM person WHERE personid = ?");
                 // 5. Supply the statement with values
-                pstmt.setInt    (1, patientid);
+                pstmt.setInt    (1, donorid);
 
                 // 6. Execute the SQL Statement
                 ResultSet rs = pstmt.executeQuery();   
 
                 // 7. Get the results
                 while (rs.next()) {
-                    patientid    = rs.getInt("personid");
+                    donorid    = rs.getInt("personid");
                     firstname    = rs.getString("firstname");
                     lastname     = rs.getString("lastname");
                     middlename   = rs.getString("middlename");

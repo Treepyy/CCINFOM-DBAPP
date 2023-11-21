@@ -70,7 +70,9 @@ CREATE TABLE donation(
     foreign key (donor) REFERENCES   
         donor (donorid),  
     foreign key(facility) REFERENCES
-        health_facility (facilityid) 
+        health_facility (facilityid),
+	foreign key (medicine) REFERENCES
+		medicine (medicineid)
 );
 
 CREATE TABLE nondonated_medicine(
