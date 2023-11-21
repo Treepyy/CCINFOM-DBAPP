@@ -8,11 +8,12 @@ import java.sql.SQLException;
 
 public class Reports1 {
     
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678";
+
     public String getFacilityForDonation(int donationId) {
         String facilityName = null;
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT hf.facilityname " +
                              "FROM health_facility hf " +
@@ -38,8 +39,7 @@ public class Reports1 {
     public int getDonationCountByFacilityType(String facilityType) {
         int donationQuantity = 0;
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT COUNT(d.donationid) AS donationQuantity " +
                              "FROM health_facility h " +
@@ -66,8 +66,7 @@ public class Reports1 {
     public int getDonationCountByMonth(int medicineId, int month) {
         int donationCount = 0;
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT COUNT(d.donationid) AS donationCount " +
                              "FROM medicine m " +
@@ -94,8 +93,7 @@ public class Reports1 {
     public int getDonorDonationToFacilityCountByFacilityType(String facilityType) {
         int donationCount = 0;
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT COUNT(dn.donationid) AS donationCount " +
                              "FROM donor d " +

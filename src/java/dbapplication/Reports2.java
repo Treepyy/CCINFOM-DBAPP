@@ -8,9 +8,10 @@ import java.sql.SQLException;
 
 public class Reports2 {
     
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678";
+
     public void getMedicationHistoryForPatient(int patientId, int medicineId) {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT mt.patientid, mt.administer, mt.amountgiven " +
                              "FROM medication_tracking mt " +
@@ -33,9 +34,8 @@ public class Reports2 {
         }
     }
     
-   public void getAverageProvisionByMedicineType(int month) {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+    public void getAverageProvisionByMedicineType(int month) {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT m.medtype, MONTH(mt.administer) AS administerMonth, AVG(mt.amountgiven) AS avgProvision " +
                              "FROM medication_tracking mt " +
@@ -58,12 +58,11 @@ public class Reports2 {
             System.out.println("Error: " + e.getMessage());
         }
     }
-   
-   public String getHighestProvidedMedicineType(int month) {
+    
+    public String getHighestProvidedMedicineType(int month) {
         String highestMedicineType = null;
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT m.medtype, MONTH(mt.administer) AS administerMonth, SUM(mt.amountgiven) AS totalProvision " +
                              "FROM medication_tracking mt " +
@@ -88,10 +87,9 @@ public class Reports2 {
 
         return highestMedicineType;
     }
-   
-   public void getTotalMedicineQuantityByYear(int year) {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+    
+    public void getTotalMedicineQuantityByYear(int year) {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT m.medtype, YEAR(mt.administer) AS administerYear, SUM(mt.amountgiven) AS totalQuantity " +
                              "FROM medication_tracking mt " +
@@ -115,10 +113,9 @@ public class Reports2 {
             System.out.println("Error: " + e.getMessage());
         }
     }
-   
-   public void getPatientWithMostMedicineByYear() {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+    
+    public void getPatientWithMostMedicineByYear() {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT p.patientid, YEAR(mt.administer) AS administerYear, SUM(mt.amountgiven) AS totalQuantity " +
                              "FROM patient p " +
@@ -133,9 +130,6 @@ public class Reports2 {
                 int administerYear = rs.getInt("administerYear");
                 int totalQuantity = rs.getInt("totalQuantity");
 
-                System.out.println("Patient ID: " + patientId +
-                        ", Year: " + administerYear +
-                        ", Total Quantity: " + totalQuantity);
             }
 
             rs.close();
@@ -143,10 +137,9 @@ public class Reports2 {
             System.out.println("Error: " + e.getMessage());
         }
     }
-   
-   public void getPatientWithMostQuantityByYear() {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345");
+    
+    public void getPatientWithMostQuantityByYear() {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(
                      "SELECT t.patientid, t.administerYear, t.totalQuantity " +
                              "FROM ( " +
