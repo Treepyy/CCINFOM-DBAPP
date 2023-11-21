@@ -123,7 +123,7 @@ public class Patient {
                 }  
         }
         
-        public int modRecord () {           // Method modify a Record
+        public String modRecord () {           // Method modify a Record
             try {
                 // 1. Instantiate a connection variable
                 Connection conn;     
@@ -139,10 +139,12 @@ public class Patient {
                                                                 "       gender        = ?," +
                                                                 "       birthday      = ?," +
                                                                 "       age           = ?," +
-                                                                "       filepath      = ? " +
+                                                                "       picture       = ? " +
                                                                 "WHERE  personid      = ? "
                                                                 );
                 // 5. Supply the statement with values
+                age = calculateAge(birthday.toLocalDate(), LocalDate.now());
+                
                 pstmt.setString (1, firstname);
                 pstmt.setString (2, lastname);
                 pstmt.setString (3, middlename);
@@ -156,24 +158,33 @@ public class Patient {
                 pstmt.close();
                 
                 PreparedStatement patientPstmt = conn.prepareStatement("UPDATE patient           " +
-                                                                       "SET    admission     = ?," +
-                                                                       "       discharge     = ? " +
-                                                                       "WHERE  personid      = ? "
+                                                                       "SET    facilityid    = ?," +
+                                                                       "       admission     = ?," +
+                                                                       "       discharge     = ?," +
+                                                                       "       patientstatus = ? " +
+                                                                       "WHERE  patientid     = ? "
                                                                        );
                                                                 
-                patientPstmt.setDate (1, admission);
-                patientPstmt.setDate (2, discharge);
-                patientPstmt.setInt (3, patientid);
+                if (facilityid == 0){
+                    patientPstmt.setNull(1, Types.INTEGER);
+                }
+                else{
+                    patientPstmt.setInt(1, facilityid);  
+                }
+                patientPstmt.setDate(2, admission);
+                patientPstmt.setDate(3, discharge);
+                patientPstmt.setString(4, status);
+                patientPstmt.setInt(5, patientid);
                 
                 patientPstmt.executeUpdate();
                 patientPstmt.close();
 
                 conn.close();
-                return 1;
+                return "1";
                 
             } catch (SQLException e) {
                 System.out.println(e.getMessage());  
-                return 0;
+                return e.getMessage();
             }         
         }
         
@@ -211,10 +222,10 @@ public class Patient {
                 System.out.println("Connection Successful");
                 // 4. Prepare our INSERT Statement
                 PreparedStatement pstmt = conn.prepareStatement(
-                           "SELECT personid, firstname, lastname, middlename, gender, birthday, age, picture, admission, discharge " + 
+                           "SELECT patientid, firstname, lastname, middlename, gender, birthday, age, picture, facilityid, admission, discharge, patientstatus " + 
                            "FROM person JOIN patient " + 
                            "ON patient.patientid = person.personid " +
-                           "WHERE  personid = ?;"
+                           "WHERE  patientid = ?;"
                         );
                 
                 /*
@@ -231,7 +242,7 @@ public class Patient {
 
                 // 7. Get the results
                 while (rs.next()) {
-                    patientid    = rs.getInt("personid");
+                    patientid    = rs.getInt("patientid");
                     firstname    = rs.getString("firstname");
                     lastname     = rs.getString("lastname");
                     middlename   = rs.getString("middlename");
@@ -239,14 +250,22 @@ public class Patient {
                     birthday     = rs.getDate("birthday");
                     age          = rs.getInt("age");
                     filepath     = rs.getString("picture");
+                    facilityid   = rs.getInt("facilityid");
                     admission    = rs.getDate("admission");
                     discharge    = rs.getDate("discharge");
+                    status       = rs.getString("patientstatus");
                 }
                 
                 rs.close();
                 pstmt.close();
                 conn.close();
+                
+                if (firstname == null){
+                    return 2;
+                }
+                
                 return 1;
+                
             } catch (SQLException e) {
                 System.out.println(e.getMessage());  
                 return 0;
@@ -339,6 +358,13 @@ public class Patient {
         testp.filepath = "Bob.png";
         testp.gender = "M";
         testp.addRecord();*/
+        
+        Patient testp = new Patient();
+        testp.patientid = 1013;
+        testp.firstname = "bb";
+        testp.modRecord();
+        System.out.println(testp.modRecord());
+        System.out.println(testp.firstname);
         
         // OD.ordernumber = 8001;
         // OD.pcode       = 7002;

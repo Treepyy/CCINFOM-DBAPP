@@ -69,6 +69,7 @@
             session.setAttribute("s_lastname", medBean.lastname);
             session.setAttribute("s_middlename", medBean.middlename);
             session.setAttribute("s_birthday", birthdayStr);
+            session.setAttribute("s_age", medBean.age);
             session.setAttribute("s_gender", medBean.gender);
             session.setAttribute("s_filepath", medBean.filepath);
             if (medBean.facilityid == 0){
