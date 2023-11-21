@@ -1,9 +1,13 @@
+package dbapplication;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.sql.Date;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 
 public class Donation {
 
@@ -14,7 +18,7 @@ public class Donation {
     public Date donationdate;
 
     private int generateDonationID() {
-        int newDonationId = 10000;
+        int newDonationId = 50000;
 
         try (Connection conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678")) {
@@ -35,7 +39,7 @@ public class Donation {
         }
     }
 
-    public void createDonation(int donorId, int facilityId, int medicineId) {
+    public int createDonation(int donorId, int facilityId, int medicineId) {
         donationid = generateDonationID();
         donor = donorId;
         facility = facilityId;
@@ -55,6 +59,7 @@ public class Donation {
                 pstmtDonation.setDate(5, donationdate);
 
                 pstmtDonation.executeUpdate();
+                pstmtDonation.close();
                 System.out.println("Donation created successfully!");
             }
 
@@ -66,21 +71,19 @@ public class Donation {
                 pstmtDonatedMedicine.setInt(3, facility);
 
                 pstmtDonatedMedicine.executeUpdate();
+                pstmtDonatedMedicine.close();
                 System.out.println("Record added to donated_medicine successfully!");
             }
-
+            
+            
+            conn.close();
+            
+           return 1;
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
+            return 0;
         }
     }
 
-    public static void main(String[] args) {
-        Donation testDonation = new Donation();
-
-        int donorId = 1234;
-        int facilityId = 5678;
-        int medicineId = 789;
-
-        testDonation.createDonation(donorId, facilityId, medicineId);
-    }
+    
 }
