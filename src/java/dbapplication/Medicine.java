@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class Medicine {
 
@@ -123,6 +124,77 @@ public class Medicine {
             System.out.println(e.getMessage());
         }
     }
+    
+    public ArrayList<Integer> getMedicineIDs(int facilityid){
+         
+            ArrayList<Integer> medicineIDs = new ArrayList<>();
+            
+            try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                           "SELECT medicineid " + 
+                           "FROM medicine " +
+                           "WHERE facilityid = " + facilityid + ";"
+                        );
+
+                ResultSet rs = pstmt.executeQuery();   
+
+                // 7. Get the results
+                while (rs.next()) {
+                    medicineIDs.add(rs.getInt("medicineid"));
+                }
+                
+                rs.close();
+                pstmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+            } 
+            
+            return medicineIDs;
+     }
+     
+     public String getMedicineName(int medicineid){
+         
+            try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                           "SELECT brandname, genericname "  + 
+                           "FROM medicine " + 
+                           "WHERE medicineid = "   + medicineid + ";"
+                        );
+                
+                String name = "";
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()){
+                    name = rs.getString("brandname") + " " + rs.getString("genericname");
+                }
+                
+                
+                rs.close();
+                pstmt.close();
+                conn.close();
+                
+                return name;
+                
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+                return null;
+            } 
+         
+     }
 
     public class Main {
         public static void main(String[] args) {

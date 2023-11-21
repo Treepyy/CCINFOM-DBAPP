@@ -1,3 +1,5 @@
+package dbapplication;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -6,8 +8,11 @@ import java.sql.ResultSet;
 import java.sql.Date;
 
 public class Medication_Tracking {
+    
+    public Date administer;
+    public int amtgiven;
 
-    public void assignMedicineToAdmittedPatient(int medicineId, int patientId) {
+    public String assignMedicineToAdmittedPatient(int medicineId, int patientId) {
         try (Connection conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678")) {
 
@@ -37,20 +42,25 @@ public class Medication_Tracking {
                     }
                 }
             }
-
+            
+            return "1";
+            
         } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
+            return "Error: " + e.getMessage();
         }
     }
 
     private void assignMedicine(Connection conn, int medicineId, int patientId, int facilityId) {
         try {
-            String assignMedicineQuery = "INSERT INTO medication_tracking (patientid, facilityid, medicineid, administer) VALUES (?, ?, ?, ?)";
+            String assignMedicineQuery = "INSERT INTO medication_tracking (patientid, facilityid, medicineid, administer, amountgiven) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement assignMedicineStmt = conn.prepareStatement(assignMedicineQuery)) {
                 assignMedicineStmt.setInt(1, patientId);
                 assignMedicineStmt.setInt(2, facilityId);
                 assignMedicineStmt.setInt(3, medicineId);
-                assignMedicineStmt.setDate(4, new Date(System.currentTimeMillis()));
+                
+                administer = new Date(System.currentTimeMillis());
+                assignMedicineStmt.setDate(4, administer);
+                assignMedicineStmt.setInt(5, amtgiven);
 
                 assignMedicineStmt.executeUpdate();
                 System.out.println("Medicine assigned to the patient successfully!");
@@ -131,7 +141,12 @@ public class Medication_Tracking {
 
     public static void main(String[] args) {
         Medication_Tracking medicationTracking = new Medication_Tracking();
-
+        
+        medicationTracking.amtgiven = 3;
+        medicationTracking.administer = new Date(System.currentTimeMillis());
+        medicationTracking.assignMedicineToAdmittedPatient(301, 1008);
+        
+        /*
         int medicineId = 101;
         int patientId = 1001;
         Date newAdministerDate = new Date(System.currentTimeMillis());
@@ -141,6 +156,6 @@ public class Medication_Tracking {
 
         medicationTracking.assignMedicineToAdmittedPatient(medicineId, patientId);
         medicationTracking.modMedicationTracking(patientId, medicineId, newAdministerDate, newAmountGiven, newFacilityId);
-        medicationTracking.updatePatientStatus(patientId, newStatus);
+        medicationTracking.updatePatientStatus(patientId, newStatus);*/
     }
 }

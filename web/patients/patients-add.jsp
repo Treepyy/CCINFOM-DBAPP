@@ -226,7 +226,6 @@
             Status : <select name="status" id="status" disabled> 
                         <option value="" selected hidden>No Status</option>
                         <option value="A"> Admitted </option>  
-                        <option value="U"> Under Medication </option>
                         <option value="D" hidden> Discharged </option>
                     </select><br><br>
             <input type="submit" value="Submit" name="Submit" class="normbtn" id="submitBtn" disabled /><br>

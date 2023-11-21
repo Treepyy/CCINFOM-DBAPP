@@ -22,8 +22,8 @@ and open the template in the editor.
         <div class="container">
             <h1>Transactions</h1>
             <hr>
-            <button onclick="location.href = 'selection-patients.jsp';" type="submit" class="normbtn">Donations</button>
-            <button onclick="location.href = 'selection-patients.jsp';" type="submit" class="normbtn">Medicine Tracking</button>
+            <button onclick="location.href = 'donations.jsp';" type="submit" class="normbtn">Donations</button>
+            <button onclick="location.href = 'medicine-tracking.jsp';" type="submit" class="normbtn">Medicine Tracking</button>
             <button onclick="location.href = 'index.jsp';" type="submit" class="normbtn">Return to Main</button>
         </div>
     </body>

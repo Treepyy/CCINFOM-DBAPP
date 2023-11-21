@@ -335,6 +335,78 @@ public class Patient {
                     name = rs.getString("facilityname");
                 }
                 
+                rs.close();
+                pstmt.close();
+                conn.close();
+                
+                return name;
+                
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+                return null;
+            } 
+         
+     }
+     
+    public ArrayList<Integer> getPatientIDs(int facilityid){
+         
+            ArrayList<Integer> patientIDs = new ArrayList<>();
+            
+            try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                           "SELECT patientid " + 
+                           "FROM patient " +
+                           "WHERE facilityid = " + facilityid + " " +
+                           "AND patientstatus = 'A' " +  ";"
+                        );
+
+                ResultSet rs = pstmt.executeQuery();   
+
+                // 7. Get the results
+                while (rs.next()) {
+                    patientIDs.add(rs.getInt("patientid"));
+                }
+                
+                rs.close();
+                pstmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+            } 
+            
+            return patientIDs;
+     }
+     
+     public String getPatientName(int patientid){
+         
+            try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                           "SELECT firstname, lastname " + 
+                           "FROM person JOIN patient " + 
+                           "ON patient.patientid = person.personid " +
+                           "WHERE  patientid = " + patientid + ";"
+                        );
+                
+                String name = "";
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()){
+                    name = rs.getString("firstname") + " " + rs.getString("lastname");
+                }
+                
                 
                 rs.close();
                 pstmt.close();
@@ -349,6 +421,66 @@ public class Patient {
          
      }
      
+     public int updatePatientStatus(){
+           try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                                    "UPDATE patient           " +
+                                    "SET  patientstatus   = ? " +
+                                    "WHERE  patientid     = ? " + ";"
+                        );
+                
+                pstmt.setString(1, status);
+                pstmt.setInt(2, patientid);
+                
+                pstmt.executeUpdate();
+                pstmt.close();
+                conn.close();
+                
+                return 1;
+                
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+                return 0;
+            } 
+     }
+     
+     public int updatePatientStatus(Date dischargeDate){
+           try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                                    "UPDATE patient             " +
+                                    "SET  patientstatus   ='D', " +
+                                    "     discharge       = ?   " +
+                                    "WHERE  patientid     = ?   " + ";"
+                        );
+                
+                pstmt.setDate(1, dischargeDate);
+                pstmt.setInt (2, patientid);
+                
+                pstmt.executeUpdate();
+                pstmt.close();
+                conn.close();
+                
+                return 1;
+                
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+                return 0;
+            } 
+     }
       
      public static void main (String[] args) {
         
@@ -367,8 +499,10 @@ public class Patient {
         testp.addRecord();*/
         
         Patient testp = new Patient();
-        testp.patientid = 1017;
-        testp.delRecord();
+        ArrayList<Integer> list = testp.getPatientIDs(600001);
+        for (int i : list){
+            System.out.println(i + " " + testp.getPatientName(i));
+        }
         
         /*
         testp.firstname = "bb";
