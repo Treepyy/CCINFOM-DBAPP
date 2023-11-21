@@ -6,6 +6,7 @@
 package dbapplication;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -481,6 +482,73 @@ public class Patient {
                 return 0;
             } 
      }
+     
+    public String searchRecord(String[] filters, int totalFilters) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+            System.out.println("Connection Successful");
+
+            String sql = "SELECT patientid, firstname, lastname, middlename, gender, birthday, age, picture, facilityid, admission, discharge, patientstatus " +
+                    "FROM person JOIN patient " +
+                    "ON patient.patientid = person.personid " +
+                    "WHERE ";
+
+            for (int i = 0; i < totalFilters; i++) {
+                switch (filters[i]) {
+                    case "lastname":
+                        sql += "lastname " + "= " + "'" + this.lastname + "'" + " ";
+                        break;
+                    case "firstname":
+                        sql += "firstname " + "= " + "'" + this.firstname + "'" + " ";
+                        break;
+                    case "facility":
+                        sql += "facilityid " + "= " + this.facilityid + " ";
+                        break;
+                    case "status":
+                        sql += "patientstatus " + "= " + "'" + this.status + "'" + " ";
+                        break;
+                    case "gender":
+                        sql += "gender " + "= " + "'" + this.gender + "'" + " ";
+                        break;
+                }
+
+                if (i < totalFilters - 1)
+                    sql += "AND ";
+                else
+                    sql += ";";
+            }
+
+            System.out.println(sql);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+
+            List<String> resultRows = new ArrayList<>();
+
+            while (rs.next()) {
+                StringBuilder row = new StringBuilder();
+                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    row.append(rs.getString(i)).append(", ");
+                }
+                // Remove the trailing comma and space
+                row.setLength(row.length() - 2);
+                resultRows.add(row.toString());
+            }
+
+            rs.close();
+            pstmt.close();
+            conn.close();
+
+            // Convert the List to an array
+            
+            String resultString = String.join("\n", resultRows.toArray(new String[0]));
+            return resultString;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
       
      public static void main (String[] args) {
         
@@ -498,11 +566,18 @@ public class Patient {
         testp.gender = "M";
         testp.addRecord();*/
         
+        
         Patient testp = new Patient();
+        String[] test = {"gender"};
+        testp.gender = "M"; testp.status = "D";
+        String rs = testp.searchRecord(test, 1);
+        
         ArrayList<Integer> list = testp.getPatientIDs(600001);
         for (int i : list){
             System.out.println(i + " " + testp.getPatientName(i));
         }
+        
+        System.out.println(rs);
         
         /*
         testp.firstname = "bb";
