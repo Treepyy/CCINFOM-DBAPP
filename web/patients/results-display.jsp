@@ -57,6 +57,10 @@
                         <td>${s_filepath}</td>
                     </tr>
                     <tr>
+                        <td>Facility ID</td>
+                        <td>${s_facilityid}</td>
+                    </tr>
+                    <tr>
                         <td>Admission Date</td>
                         <td>${s_admissiondate}</td>
                     </tr>
@@ -64,12 +68,16 @@
                         <td>Discharge Date</td>
                         <td>${s_discharge}</td>
                     </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>${s_status}</td>
+                    </tr>
                 </table>
         <%
             }
         %>
-        <button onclick="location.href = '${returnurl}';" class="normbtn">Return</button><br>
-        <button onclick="location.href = 'selection-patients.jsp';" class="normbtn">${buttonLbl}</button>
+        <button onclick="location.href = '${returnurl}';" class="normbtn">${buttonLbl}</button><br>
+        <button onclick="location.href = 'selection-patients.jsp';" class="normbtn">Back to Selection</button>
         
     </div>
 </body>

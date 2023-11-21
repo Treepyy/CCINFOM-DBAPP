@@ -5,6 +5,7 @@
  */
 package dbapplication;
 import java.sql.*;
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -21,6 +22,8 @@ public class Patient {
         public String gender;
         public int age;
         public String filepath;
+        public int facilityid;
+        public String status;
         
         public Patient(){
      
@@ -95,10 +98,18 @@ public class Patient {
                 // 6. Execute the SQL Statement
                 pstmt.executeUpdate();
                 
-                PreparedStatement patientPstmt = conn.prepareStatement("INSERT INTO patient VALUES (?,?,?)");
+                PreparedStatement patientPstmt = conn.prepareStatement("INSERT INTO patient (patientid, facilityid, admission, discharge, patientstatus) "
+                                                                     + "VALUES (?,?,?,?,?)");
                 patientPstmt.setInt(1, patientid);
-                patientPstmt.setDate(2, admission);
-                patientPstmt.setDate(3, discharge);
+                if (facilityid == 0){
+                    patientPstmt.setNull(2, Types.INTEGER);
+                }
+                else{
+                    patientPstmt.setInt(2, facilityid);  
+                }
+                patientPstmt.setDate(3, admission);
+                patientPstmt.setDate(4, discharge);
+                patientPstmt.setString(5, status);
                 
                 patientPstmt.executeUpdate();
                 
@@ -242,11 +253,84 @@ public class Patient {
             }           
       }
       
+     public ArrayList<Integer> getFacilityIDs(){
+         
+            ArrayList<Integer> facilityIDs = new ArrayList<>();
+            
+            try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                           "SELECT facilityid " + 
+                           "FROM health_facility; "
+                        );
+
+                ResultSet rs = pstmt.executeQuery();   
+
+                // 7. Get the results
+                while (rs.next()) {
+                    facilityIDs.add(rs.getInt("facilityid"));
+                }
+                
+                rs.close();
+                pstmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+            } 
+            
+            return facilityIDs;
+     }
+     
+     public String getFacilityName(int facilityid){
+         
+            try {
+
+                Connection conn;     
+
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbapplication?useTimezone=true&serverTimezone=UTC&user=root&password=12345678");
+
+                System.out.println("Connection Successful");
+
+                PreparedStatement pstmt = conn.prepareStatement(
+                           "SELECT facilityname "  + 
+                           "FROM health_facility " + 
+                           "WHERE facilityid = "   + facilityid + ";"
+                        );
+                
+                String name = "";
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()){
+                    name = rs.getString("facilityname");
+                }
+                
+                
+                rs.close();
+                pstmt.close();
+                conn.close();
+                
+                return name;
+                
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());  
+                return null;
+            } 
+         
+     }
+     
+      
      public static void main (String[] args) {
-        Patient testp = new Patient();
         
-        testp.patientid = 1002;
-        testp.viewRecord();
+        ArrayList<Integer> facilityIDs = getFacilityIDs();
+        for (int id : facilityIDs){
+            System.out.println(id + " : " + getFacilityName(id));
+        }
+        
         /*
         testp.firstname = "Bob";
         testp.lastname = "Bobby";
