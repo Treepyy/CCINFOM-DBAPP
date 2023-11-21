@@ -200,10 +200,17 @@ public class Patient {
                 PreparedStatement pstmt = conn.prepareStatement("DELETE FROM person WHERE personid = ?");
                 // 5. Supply the statement with values
                 pstmt.setInt    (1, patientid);
+                
+                PreparedStatement patientPstmt = conn.prepareStatement("DELETE FROM patient WHERE patientid = ?");
+                patientPstmt.setInt     (1, patientid);
 
                 // 6. Execute the SQL Statement
-                pstmt.executeUpdate();   
+                patientPstmt.executeUpdate();
+                pstmt.executeUpdate();
+                
+                
                 pstmt.close();
+                patientPstmt.close();
                 conn.close();
                 return 1;
             } catch (SQLException e) {
@@ -360,11 +367,14 @@ public class Patient {
         testp.addRecord();*/
         
         Patient testp = new Patient();
-        testp.patientid = 1013;
+        testp.patientid = 1017;
+        testp.delRecord();
+        
+        /*
         testp.firstname = "bb";
         testp.modRecord();
         System.out.println(testp.modRecord());
-        System.out.println(testp.firstname);
+        System.out.println(testp.firstname);*/
         
         // OD.ordernumber = 8001;
         // OD.pcode       = 7002;

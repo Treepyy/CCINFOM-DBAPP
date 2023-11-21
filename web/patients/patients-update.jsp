@@ -108,7 +108,7 @@ public int currentPatientID;
 
         <form name="updatePatient" action="patients-update.jsp" method="POST">
             Enter Patient ID: <input type="text" name="patientid" required><br>
-            <input type="submit" value="Search" name="Search" class="normbtn"><br>
+            <input type="submit" value="View" name="View" class="normbtn"><br>
         </form>
         
         <%
@@ -318,7 +318,7 @@ public int currentPatientID;
                                             <option value="U"> Under Medication </option>
                                             <option value="D" hidden> Discharged </option>
                                         </select><br><br>
-                                <input type="submit" value="Submit" name="Update" class="normbtn" id="submitBtn" disabled /><br>
+                                <input type="submit" value="Update" name="Update" class="normbtn" id="submitBtn" disabled /><br>
                                 <i><sup>*</sup>Required Fields</i><br>
                             </form> 
         <%
@@ -331,7 +331,7 @@ public int currentPatientID;
                 } catch (NumberFormatException e) {
                     // Handle invalid input for patientId
         %>
-                    <p>Please enter a valid Patient ID.</p>
+                    <script> alert("Please enter a valid patient ID."); </script>
         <%
                 }
             }

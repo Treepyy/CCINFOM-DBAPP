@@ -1,6 +1,6 @@
 <%-- 
-    Document   : patients-delete
-    Created on : 11 18, 23, 6:04:22 PM
+    Document   : patients-search
+    Created on : 11 18, 23, 6:03:54 PM
     Author     : ccslearner
 --%>
 
@@ -15,49 +15,18 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-
-<%!
-public int currentPatientID;
-%>
-
-<%
-    // Check if the form is submitted
-    if (request.getParameter("Delete") != null) {
-        
-        Patient medBean = new Patient();
-        medBean.patientid = currentPatientID;
-        
-        String message, buttonLbl, returnurl = "patients-delete.jsp";
-        buttonLbl = "Delete Another Record";
-        
-        int result = medBean.delRecord();
-        if (result == 1) {
-            message = "Record deleted successfully!";
-        } else {
-            message = "Record could not be deleted.";
-        }
-        
-        session.setAttribute("message", message);
-        session.setAttribute("returnurl", returnurl);
-        session.setAttribute("buttonLbl", buttonLbl);
-        response.sendRedirect("results-display.jsp");
-        
-        
-    } %>
-
 <html>
     <head>
-        <title>Delete a Patient</title>
+        <title>View a Patient Record</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../maincss.css">
     </head>
     <body>
         <div class="container">
-        <div class="container">
-            <h1>Delete a Patient</h1>
+            <h1>View a Patient Record</h1>
             <hr>
-            <form name="deletePatient" action="patients-delete.jsp" method="POST">
+            <form name="viewPatient" action="patients-view.jsp" method="POST">
             Enter Patient ID: <input type="text" name="patientid" required><br>
             <input type="submit" value="View" name="View" class="normbtn"><br>
             </form>
@@ -71,7 +40,6 @@ public int currentPatientID;
                     try {
                         // Convert the patientIdStr to integer
                         patientId = Integer.parseInt(patientIdStr);
-                        currentPatientID = patientId;
 
                         // Create an instance of the Patient class
                         Patient medBean = new Patient();
@@ -139,12 +107,7 @@ public int currentPatientID;
                                 <td><%= medBean.status %></td>
                             </tr>
                         </table>
-                        <br>
-                        <form name="deletePatientForm" action="patients-delete.jsp" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?');">
-                                <input type="hidden" name="patientid" value="<%= currentPatientID %>">
-                                <input type="submit" value="Delete" name="Delete" class="normbtn" id="submitBtn" /><br>
-                        </form>
-        <%  
+        <%
                     } else {
                         // Record not found, display a message()
         %>

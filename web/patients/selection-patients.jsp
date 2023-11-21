@@ -25,7 +25,7 @@ and open the template in the editor.
             <button onclick="location.href = 'patients-add.jsp';" type="submit" class="normbtn">Add a Patient</button>
             <button onclick="location.href = 'patients-update.jsp';" type="submit" class="normbtn">Update Patient Information</button>
             <button onclick="location.href = 'patients-delete.jsp';" type="submit" class="normbtn">Delete a Patient Record</button>
-            <button onclick="location.href = 'patients-search.jsp';" type="submit" class="normbtn">Search for a Patient</button>
+            <button onclick="location.href = 'patients-view.jsp';" type="submit" class="normbtn">View a Patient Record</button>
             <button onclick="location.href = 'patients-filter.jsp';" type="submit" class="normbtn">Filter and List Patients</button>
             <button onclick="location.href = '../selection.jsp';" type="submit" class="normbtn">Return to Previous Menu</button>
         </div>
