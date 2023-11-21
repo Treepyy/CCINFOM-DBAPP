@@ -326,10 +326,10 @@ public class Patient {
       
      public static void main (String[] args) {
         
-        ArrayList<Integer> facilityIDs = getFacilityIDs();
+        /*ArrayList<Integer> facilityIDs = getFacilityIDs();
         for (int id : facilityIDs){
             System.out.println(id + " : " + getFacilityName(id));
-        }
+        }*/
         
         /*
         testp.firstname = "Bob";
